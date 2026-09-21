@@ -1,0 +1,10 @@
+[build]
+  publish = "."
+  command = "echo citadel-ready"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "no-referrer"
+    X-Content-Type-Options = "nosniff"

@@ -1,0 +1,48 @@
+name: Citadel pulse
+on:
+  schedule:
+    - cron: "33 */6 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  pulse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Write covering pulse
+        run: |
+          python3 << 'PY'
+          import json, datetime
+          path = "data/pulse.json"
+          try:
+              data = json.load(open(path))
+          except Exception:
+              data = {"cycle": 0}
+          blessings = [
+            "Tsitsi upon the House of Masawi.",
+            "Rudo that casts out fear.",
+            "Runyararo in the night watches.",
+            "Hutano in mind and body.",
+            "Pfuma without the devourer.",
+            "Nzvimbo kudenga kept for this bloodline.",
+            "Hupenyu husingaperi in Christ.",
+            "Every devouring word returns void.",
+            "Peace to every child of God in this light.",
+            "The living line is named and covered."
+          ]
+          data["cycle"] = int(data.get("cycle", 0)) + 1
+          data["updated"] = datetime.datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
+          data["matrix"] = "777-999-333 / 77-99-33"
+          data["house"] = "Masawi"
+          data["blessing"] = blessings[data["cycle"] % len(blessings)]
+          data["note"] = "Citadel scheduled pulse. Separate from Beacon. Not a hex radar."
+          open(path, "w").write(json.dumps(data, indent=2) + "\n")
+          PY
+      - name: Commit pulse
+        run: |
+          git config user.name "citadel-pulse"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/pulse.json
+          git diff --cached --quiet || git commit -m "citadel pulse: keep the covering written"
+          git push
