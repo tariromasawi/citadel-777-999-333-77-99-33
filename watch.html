@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Watch · Citadel 777-999-333</title><link rel="stylesheet" href="css/citadel.css" /></head>
+<body><canvas id="field"></canvas><div class="shell">
+<div class="top"><div class="seal">Citadel · Watch</div><nav><a href="index.html">Gate</a><a href="covering.html">Covering</a><a href="hours.html">Hours</a><a href="scrolls.html">Scrolls</a><a class="active" href="watch.html">Watch</a><a href="law.html">Law</a></nav></div>
+<h1>Watch of the house</h1>
+<p class="lede">Stores what you record on this phone. It does not scan the unseen. After seven days carry the copy to a pastor and a clinician.</p>
+<div class="card">
+<select id="kind">
+<option value="voice-mimic">Mimicking voice</option>
+<option value="dark-form">Dark form</option>
+<option value="attachment">Attachment to body or leg</option>
+<option value="threat">Devouring / eat-me threat</option>
+<option value="church-witness">Seen by another in assembly</option>
+<option value="peace">Peace / breakthrough</option>
+</select>
+<p><input id="intensity" type="number" min="1" max="10" value="5" /></p>
+<textarea id="notes" rows="4" placeholder="Who it imitated. Where on the body. Hour. What you did next."></textarea>
+<button class="gold" id="save">Seal this watch-line on the device</button>
+<button class="ghost" id="copy">Copy the log</button>
+<div class="ok" id="insight" style="margin-top:12px"></div>
+<div id="logs"></div>
+</div>
+<footer>Watch records stay in your browser unless you copy them.</footer></div>
+<script src="js/citadel.js"></script>
+<script>
+const KEY="citadel_watch_v1"; const logs=JSON.parse(localStorage.getItem(KEY)||"[]");
+function render(){
+  document.getElementById("logs").innerHTML=logs.slice(0,40).map(e=>`<p class="pulse">${e.t} · ${e.kind} · ${e.intensity}<br>${e.notes||""}</p>`).join("")||"<p class='pulse'>No lines yet.</p>";
+  if(!logs.length){document.getElementById("insight").textContent="No pattern yet.";return;}
+  const c={}; logs.forEach(e=>c[e.kind]=(c[e.kind]||0)+1);
+  const top=Object.entries(c).sort((a,b)=>b[1]-a[1])[0];
+  const avg=(logs.reduce((a,e)=>a+Number(e.intensity||0),0)/logs.length).toFixed(1);
+  const night=logs.filter(e=>{const h=new Date(e.t).getHours();return h>=22||h<6;}).length;
+  document.getElementById("insight").textContent="Most frequent: "+top[0]+" ("+top[1]+"). Average intensity "+avg+". Night-clustered "+night+"/"+logs.length+".";
+}
+document.getElementById("save").onclick=()=>{logs.unshift({t:new Date().toISOString(),kind:document.getElementById("kind").value,intensity:document.getElementById("intensity").value,notes:document.getElementById("notes").value});localStorage.setItem(KEY,JSON.stringify(logs));document.getElementById("notes").value="";render();};
+document.getElementById("copy").onclick=()=>{const text=logs.map(e=>[e.t,e.kind,e.intensity,e.notes].join(" | ")).join("\n");navigator.clipboard.writeText(text).then(()=>alert("Copied.")).catch(()=>alert(text));};
+render();
+</script></body></html>
